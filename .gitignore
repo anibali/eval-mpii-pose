@@ -3,3 +3,5 @@ plots/
 
 preds/*
 !preds/reference
+
+pred_keypoints_mpii.mat
