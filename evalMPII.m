@@ -1,20 +1,20 @@
-addpath ("eval")
+addpath ('eval')
 
-fprintf("# MPII single-person pose evaluation script\n")
+fprintf('# MPII single-person pose evaluation script\n')
 
 range = 0:0.01:0.5;
-predidxs = [0, 1];
-subset_annot_file = "annot/valid.h5";
+predidxs = [0, 1, 2];
+subset_annot_file = 'annot/valid.h5';
 
 tableDir = './latex'; if (~exist(tableDir,'dir')), mkdir(tableDir); end
 plotsDir = './plots'; if (~exist(plotsDir,'dir')), mkdir(plotsDir); end
 tableTex = cell(length(predidxs)+1,1);
 
 % load ground truth
-load(['annot/mpii_human_pose_v1_u12_1'],'RELEASE');
+load('annot/mpii_human_pose_v1_u12_1', 'RELEASE');
 annolist = RELEASE.annolist;
 
-subset = load(subset_annot_file, "index", "person");
+subset = load(subset_annot_file, 'index', 'person');
 subset_indices = subset.index + 1;
 annolist_subset = annolist(subset_indices);
 single_person_subset = RELEASE.single_person(subset_indices);
@@ -45,6 +45,11 @@ for i = 1:length(predidxs);
   if (size(preds)(1) == 2)
     preds = permute(preds, [3, 2, 1]);
   end
+
+  % Check that there are the same number of predictions and ground truth
+  % annotations. If this assertion fails, a likely cause is a mismatch in
+  % subsets (eg predictions are for the training set but ground truth
+  % annotations are for the validation set).
   assert(length(preds) == length(gt));
 
   pred_flat = annolist_subset_flat;
