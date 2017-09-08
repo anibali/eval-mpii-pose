@@ -6,6 +6,8 @@
 %         annotations in annot/test.h5.
 % Output: A Matlab file containing predictions in submission-ready format.
 
+%%% OPTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 IN_FILE = 'preds/test_preds.h5';
 OUT_FILE = 'pred_keypoints_mpii.mat';
 

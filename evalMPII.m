@@ -1,14 +1,32 @@
+% Evaluate performance by comparing predictions to ground truth annotations.
+
+%%% OPTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% IDs of prediction sets to include in results
+PRED_IDS = [1, 2];
+% Subset of the data that the predictions correspond to ('val' or 'train')
+SUBSET = 'val';
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 addpath ('eval')
 
 fprintf('# MPII single-person pose evaluation script\n')
 
+switch(SUBSET)
+  case 'train'
+    subset_annot_file = 'annot/train.h5';
+  case {'val', 'valid'}
+    subset_annot_file = 'annot/valid.h5';
+  otherwise
+    assert(false, ['unrecognised subset: ' SUBSET]);
+endswitch
+
 range = 0:0.01:0.5;
-predidxs = [0, 1, 2];
-subset_annot_file = 'annot/valid.h5';
 
 tableDir = './latex'; if (~exist(tableDir,'dir')), mkdir(tableDir); end
 plotsDir = './plots'; if (~exist(plotsDir,'dir')), mkdir(plotsDir); end
-tableTex = cell(length(predidxs)+1,1);
+tableTex = cell(length(PRED_IDS)+1,1);
 
 % load ground truth
 load('annot/mpii_human_pose_v1_u12_1', 'RELEASE');
@@ -36,11 +54,11 @@ gt = annolist2matrix(annolist_subset_flat);
 % compute head size
 headSize = getHeadSizeAll(annolist_subset_flat);
 
-pckAll = zeros(length(range),16,length(predidxs));
+pckAll = zeros(length(range),16,length(PRED_IDS));
 
-for i = 1:length(predidxs);
+for i = 1:length(PRED_IDS);
   % load predictions
-  p = getExpParamsNew(predidxs(i));
+  p = getExpParamsNew(PRED_IDS(i));
   load(p.predFilename, 'preds');
   if (size(preds)(1) == 2)
     preds = permute(preds, [3, 2, 1]);
@@ -90,11 +108,11 @@ for i=1:length(tableTex),fprintf(fid,'%s\n',tableTex{i}); end; fclose(fid);
 
 % plot curves
 bSave = true;
-plotCurveNew(squeeze(pckAll(:,end,:)),range,predidxs,'PCKh total, MPII',[plotsDir '/pckh-total-mpii'],bSave,range(1:5:end));
-plotCurveNew(squeeze(mean(pckAll(:,[1 6],:),2)),range,predidxs,'PCKh ankle, MPII',[plotsDir '/pckh-ankle-mpii'],bSave,range(1:5:end));
-plotCurveNew(squeeze(mean(pckAll(:,[2 5],:),2)),range,predidxs,'PCKh knee, MPII',[plotsDir '/pckh-knee-mpii'],bSave,range(1:5:end));
-plotCurveNew(squeeze(mean(pckAll(:,[3 4],:),2)),range,predidxs,'PCKh hip, MPII',[plotsDir '/pckh-hip-mpii'],bSave,range(1:5:end));
-plotCurveNew(squeeze(mean(pckAll(:,[7 12],:),2)),range,predidxs,'PCKh wrist, MPII',[plotsDir '/pckh-wrist-mpii'],bSave,range(1:5:end));
-plotCurveNew(squeeze(mean(pckAll(:,[8 11],:),2)),range,predidxs,'PCKh elbow, MPII',[plotsDir '/pckh-elbow-mpii'],bSave,range(1:5:end));
-plotCurveNew(squeeze(mean(pckAll(:,[9 10],:),2)),range,predidxs,'PCKh shoulder, MPII',[plotsDir '/pckh-shoulder-mpii'],bSave,range(1:5:end));
-plotCurveNew(squeeze(mean(pckAll(:,[13 14],:),2)),range,predidxs,'PCKh head, MPII',[plotsDir '/pckh-head-mpii'],bSave,range(1:5:end));
+plotCurveNew(squeeze(pckAll(:,end,:)),range,PRED_IDS,'PCKh total, MPII',[plotsDir '/pckh-total-mpii'],bSave,range(1:5:end));
+plotCurveNew(squeeze(mean(pckAll(:,[1 6],:),2)),range,PRED_IDS,'PCKh ankle, MPII',[plotsDir '/pckh-ankle-mpii'],bSave,range(1:5:end));
+plotCurveNew(squeeze(mean(pckAll(:,[2 5],:),2)),range,PRED_IDS,'PCKh knee, MPII',[plotsDir '/pckh-knee-mpii'],bSave,range(1:5:end));
+plotCurveNew(squeeze(mean(pckAll(:,[3 4],:),2)),range,PRED_IDS,'PCKh hip, MPII',[plotsDir '/pckh-hip-mpii'],bSave,range(1:5:end));
+plotCurveNew(squeeze(mean(pckAll(:,[7 12],:),2)),range,PRED_IDS,'PCKh wrist, MPII',[plotsDir '/pckh-wrist-mpii'],bSave,range(1:5:end));
+plotCurveNew(squeeze(mean(pckAll(:,[8 11],:),2)),range,PRED_IDS,'PCKh elbow, MPII',[plotsDir '/pckh-elbow-mpii'],bSave,range(1:5:end));
+plotCurveNew(squeeze(mean(pckAll(:,[9 10],:),2)),range,PRED_IDS,'PCKh shoulder, MPII',[plotsDir '/pckh-shoulder-mpii'],bSave,range(1:5:end));
+plotCurveNew(squeeze(mean(pckAll(:,[13 14],:),2)),range,PRED_IDS,'PCKh head, MPII',[plotsDir '/pckh-head-mpii'],bSave,range(1:5:end));
