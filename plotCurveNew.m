@@ -16,8 +16,6 @@ for i = 1:size(pckAll,2)
     legendName{i} = p.name;
 end
 
-legend(legendName,'Location','NorthWest');
-
 title(titleName);
 legend(legendName,'Location','NorthWest');
 set(gca,'YLim',[0 100],'xtick',rangeLabels,'ytick',0:10:100);
