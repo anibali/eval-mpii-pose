@@ -7,19 +7,25 @@ p.partNames = {'right ankle','right knee','right hip','left hip','left knee','le
 switch predidx
   % Cascaded architecture from Tompson et al., CVPR'15.
   %
+  % Validation set predictions were extracted from the bundle of
+  % prediction results made available online by Tompson et al.
+  %
   % http://www.cims.nyu.edu/~tompson/cs_portfolio.html
-  % (Data format had to be modified slightly).
   case 1
-    p.name = 'tompson';
+    p.name = 'Tompson et al., CVPR''15';
     p.predFilename = 'preds/reference/tompson.h5';
     p.colorIdxs = [5 1];
 
-  % Stacked hourglass validation set results made available by Newell et al.
+  % Stacked hourglass architecture from Newell et al., ECCV'16.
   %
-  % https://github.com/anewell/pose-hg-demo/blob/master/preds/valid-ours.h5
+  % Validation set predictions were obtained from the pretrained
+  % 8-stack model made available online by Newell et al. using
+  % their own evaluation code.
+  %
+  % https://github.com/anewell/pose-hg-demo
   case 2
-    p.name = 'newell';
-    p.predFilename = 'preds/reference/anewell-valid-ours.h5';
+    p.name = 'Newell et al., ECCV''16';
+    p.predFilename = 'preds/reference/newell.h5';
     p.colorIdxs = [1 1];
 
   % Stacked hourglass validation set results made available by Wei Yang
