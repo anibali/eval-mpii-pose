@@ -13,15 +13,26 @@ OUT_FILE = 'pred_keypoints_mpii.mat';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Load test set annotations (joint ground truths will be missing)
 load('annot/mpii_human_pose_v1_u12_1', 'RELEASE');
-test_annot = load('annot/test.h5', 'index',  'person');
-test_indices = test_annot.index + 1;
-test_persons = test_annot.person + 1;
 
-% Load predictions
-test_preds = load(IN_FILE, 'preds');
-test_preds = test_preds.preds;
+if exist ("OCTAVE_VERSION", "builtin") > 0
+  % Load test set annotations (joint ground truths will be missing)
+  test_annot = load('annot/test.h5', 'index',  'person');
+  test_indices = test_annot.index + 1;
+  test_persons = test_annot.person + 1;
+
+  % Load predictions
+  test_preds = load(IN_FILE, 'preds');
+  test_preds = test_preds.preds;
+else
+  % Load test set annotations (joint ground truths will be missing)
+  test_indices = h5read('annot/test.h5', '/index') + 1;
+  test_persons = h5read('annot/test.h5', '/person') + 1;
+
+  % Load predictions
+  test_preds = h5read('preds/test_preds.h5', '/preds');
+end
+
 if (size(test_preds, 3) == 2)
   test_preds = permute(test_preds, [3, 2, 1]);
 end
@@ -68,13 +79,13 @@ pred = pred(RELEASE.img_train == 0);
 
 correlation = corr(cell2mat(centers)', cell2mat(thorax_preds)');
 
-printf('Correlation between person centers and thorax predictions:\n');
+display('Correlation between person centers and thorax predictions:\n');
 display(diag(correlation));
 
 if min(diag(correlation)) < 0.5
-  printf('! Low correlation between predicted thorax positions and\n');
-  printf('! annotated person centers detected. This could indicate a\n');
-  printf('! mismatch in example ordering, or very poor predictions.\n');
+  display('! Low correlation between predicted thorax positions and\n');
+  display('! annotated person centers detected. This could indicate a\n');
+  display('! mismatch in example ordering, or very poor predictions.\n');
 end
 
 save(OUT_FILE, 'pred', '-v7');
