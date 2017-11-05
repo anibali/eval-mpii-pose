@@ -20,7 +20,7 @@ switch(SUBSET)
     subset_annot_file = 'annot/valid.h5';
   otherwise
     assert(false, ['unrecognised subset: ' SUBSET]);
-endswitch
+end
 
 range = 0:0.01:0.5;
 
@@ -32,8 +32,15 @@ tableTex = cell(length(PRED_IDS)+1,1);
 load('annot/mpii_human_pose_v1_u12_1', 'RELEASE');
 annolist = RELEASE.annolist;
 
-subset = load(subset_annot_file, 'index', 'person');
-subset_indices = subset.index + 1;
+if exist ("OCTAVE_VERSION", "builtin") > 0
+  subset_annot = load(subset_annot_file, 'index',  'person');
+  subset_indices = subset_annot.index + 1;
+  subset_persons = subset_annot.person + 1;
+else
+  subset_indices = h5read(subset_annot_file, '/index') + 1;
+  subset_persons = h5read(subset_annot_file, '/person') + 1;
+end
+
 annolist_subset = annolist(subset_indices);
 single_person_subset = RELEASE.single_person(subset_indices);
 
@@ -41,7 +48,7 @@ annolist_subset_flat = struct('image',[],'annorect',[]);
 n = 0;
 for imgidx = 1:length(annolist_subset)
   rect_gt = annolist_subset(imgidx).annorect;
-  ridx = subset.person(imgidx) + 1;
+  ridx = subset_persons(imgidx);
   if (isfield(rect_gt(ridx),'objpos') && ~isempty(rect_gt(ridx).objpos))
     n = n + 1;
     annolist_subset_flat(n).image.name = annolist_subset(imgidx).image.name;
@@ -59,8 +66,12 @@ pckAll = zeros(length(range),16,length(PRED_IDS));
 for i = 1:length(PRED_IDS);
   % load predictions
   p = getExpParamsNew(PRED_IDS(i));
-  load(p.predFilename, 'preds');
-  if (size(preds)(1) == 2)
+  try
+    load(p.predFilename, 'preds');
+  catch
+    preds = h5read(p.predFilename, '/preds');
+  end
+  if size(preds, 1) == 2
     preds = permute(preds, [3, 2, 1]);
   end
 
@@ -116,3 +127,5 @@ plotCurveNew(squeeze(mean(pckAll(:,[7 12],:),2)),range,PRED_IDS,'PCKh wrist, MPI
 plotCurveNew(squeeze(mean(pckAll(:,[8 11],:),2)),range,PRED_IDS,'PCKh elbow, MPII',[plotsDir '/pckh-elbow-mpii'],bSave,range(1:5:end));
 plotCurveNew(squeeze(mean(pckAll(:,[9 10],:),2)),range,PRED_IDS,'PCKh shoulder, MPII',[plotsDir '/pckh-shoulder-mpii'],bSave,range(1:5:end));
 plotCurveNew(squeeze(mean(pckAll(:,[13 14],:),2)),range,PRED_IDS,'PCKh head, MPII',[plotsDir '/pckh-head-mpii'],bSave,range(1:5:end));
+
+display('Done.')

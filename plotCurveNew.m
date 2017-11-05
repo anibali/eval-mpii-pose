@@ -24,9 +24,11 @@ ylabel('Detection rate, %');
 grid on;
 
 if (bSave)
+    % NOTE: The pauses are a workaround for Matlab segfaulting
     print(gcf, '-dpng', [fname '.png']);
+    pause(0.5);
     printpdf([fname '.pdf']);
-    % savefig([fname '.fig']);
+    pause(0.5);
 end
 
 end
