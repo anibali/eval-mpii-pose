@@ -18,6 +18,17 @@ Predictions produced by the following repositories meet these requirements:
 * https://github.com/bearpaw/pytorch-pose
 * https://github.com/anewell/pose-hg-demo
 
+## Metrics
+
+### PCKh
+
+The PCKh performance metric is the percentage of joints with predicted locations
+that are no further than half of the head segment length from the ground truth.
+
+"PCKh total" excludes the pelvis and thorax joints from the calculation,
+presumably because they are very easy to predict given that the approximate
+person center is provided.
+
 ## Scripts
 
 ### `evalMPII.m`
