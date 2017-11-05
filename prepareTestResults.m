@@ -77,4 +77,4 @@ if min(diag(correlation)) < 0.5
   printf('! mismatch in example ordering, or very poor predictions.\n');
 end
 
-save(OUT_FILE, 'pred');
+save(OUT_FILE, 'pred', '-v7');
