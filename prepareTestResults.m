@@ -39,7 +39,20 @@ end
 
 % Check that the number of predictions is correct
 n_test_examples = length(test_indices);
-assert(size(test_preds, 3) == n_test_examples);
+
+% Validate the number of predictions
+n_test_preds = size(test_preds, 3);
+if (n_test_preds ~= n_test_examples)
+  switch n_test_preds
+    case 2958
+      fprintf('! It looks like your predictions are from the validation set,\n')
+      fprintf('! but this script works for test set predictions only.\n')
+    case 22246
+      fprintf('! It looks like your predictions are from the training set,\n')
+      fprintf('! but this script works for test set predictions only.\n')
+  end
+  error(sprintf('Expected %d predictions, got %d', n_test_examples, n_test_preds))
+end
 
 pred = RELEASE.annolist;
 n_joints = size(test_preds, 2); % Should be 16
@@ -79,13 +92,13 @@ pred = pred(RELEASE.img_train == 0);
 
 correlation = corr(cell2mat(centers)', cell2mat(thorax_preds)');
 
-display('Correlation between person centers and thorax predictions:\n');
+fprintf('Correlation between person centers and thorax predictions:\n');
 display(diag(correlation));
 
 if min(diag(correlation)) < 0.5
-  display('! Low correlation between predicted thorax positions and\n');
-  display('! annotated person centers detected. This could indicate a\n');
-  display('! mismatch in example ordering, or very poor predictions.\n');
+  fprintf('! Low correlation between predicted thorax positions and\n');
+  fprintf('! annotated person centers detected. This could indicate a\n');
+  fprintf('! mismatch in example ordering, or very poor predictions.\n');
 end
 
 save(OUT_FILE, 'pred', '-v7');
