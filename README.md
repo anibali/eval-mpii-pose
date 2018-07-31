@@ -2,6 +2,9 @@
 
 Scripts for evaluating results on the MPII human pose dataset.
 
+Disclaimer: This is an *unofficial* repository, I am not from MPI and I
+was not involved in the creation of the dataset.
+
 ## Input format
 
 Predictions are expected to have the following format:
