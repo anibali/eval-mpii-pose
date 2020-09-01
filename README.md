@@ -1,6 +1,7 @@
 # eval-mpii-pose
 
-Scripts for evaluating results on the MPII human pose dataset.
+Scripts for evaluating results on the MPII human pose dataset. "Single person pose
+estimation" is the only type of evaluation currently supported.
 
 Disclaimer: This is an *unofficial* repository, I am not from MPI and I
 was not involved in the creation of the dataset.
